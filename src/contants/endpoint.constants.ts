@@ -1,4 +1,5 @@
 export const BASE_URL = 'https://pos.kenshintoroi.com';
+// export const BASE_URL = 'http://backend-api.test';
 
 export const API_PATHS = {
     LOGIN: '/api/login',

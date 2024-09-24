@@ -6,11 +6,17 @@ import { ConnectionStatus } from "@capacitor/network";
 
 type DeviceState = {
     network: ConnectionStatus,
+    token: string,
     uuid: string,
+    user: any,
+    device: any,
 };
 
 type DeviceActions = {
     setNetwork: (network: any) => any,
+    saveToken: (token: string) => any,
+    saveUser: (user: any) => any,
+    setDevice: (device: any) => any,
 };
 
 const initialState: DeviceState = {
@@ -18,17 +24,22 @@ const initialState: DeviceState = {
         connected: true,
         connectionType: 'none'
     },
-    uuid: ''
+    token: '',
+    uuid: '',
+    user: null,
+    device: null
 };
 
 const persistStorage: StateStorage = ionicStorage;
 
 const storageOptions = {
-    name: 'cart.store',
+    name: 'device.store',
     storage: createJSONStorage(() => persistStorage),
     partialize: (state: DeviceState & DeviceActions) => ({
         network: state.network,
-        uuid: state.uuid
+        uuid: state.uuid,
+        user: state.user,
+        device: state.device
     })
 }
 
@@ -40,6 +51,21 @@ export const useDeviceStore = create<DeviceState & DeviceActions>()(
                 set({
                     network
                 });
+            },
+            saveToken: (token: string) => {
+                set({
+                    token
+                });
+            },
+            saveUser: (user: any) => {
+                set({
+                    user
+                });
+            },
+            setDevice: (device: any) => {
+                set({
+                    device
+                })
             }
         })),
         storageOptions

@@ -1,10 +1,10 @@
-import { useDevice } from '../hooks';
+import { STORAGE_TYPES } from '../contants';
 
-export const getHeaders = () => {
-    const { token } = useDevice();
+export const useHeaders = () => {
+    const token = localStorage.getItem(STORAGE_TYPES.TOKEN);
     return {
         Authorization: `Bearer ${token}`
-    }
+    };
 }
 
 export * from './products.service';

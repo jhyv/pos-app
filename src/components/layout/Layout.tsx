@@ -5,14 +5,19 @@ import { Header } from '../header/Header';
 
 interface LayoutProps {
     children?: ReactNode;
+    hideHeader?: boolean;
 }
 
 export const Layout: React.FC<LayoutProps> = ({
-    children
+    children,
+    hideHeader
 }) => {
     return (
         <IonPage>
-            <Header />
+            {
+                !hideHeader &&
+                <Header />
+            }
             <IonContent>
                 {children}
             </IonContent>

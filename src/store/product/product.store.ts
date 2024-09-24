@@ -3,20 +3,21 @@ import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { ionicStorage } from "../../utils";
 import { Product } from "../../models/product.model";
-import { getProducts } from "../../services";
-import { Response } from "../../models";
 
 type ProductState = {
     products: Product[],
+    metadata: any,
 };
 
 type ProductActions = {
-    getRemoteProducts: () => any;
     getLocalProducts: () => any;
+    setMetadata: (metadata: any) => any;
+    setProducts: (products: any[]) => any;
 };
 
 const initialState: ProductState = {
     products: [],
+    metadata: null
 };
 
 const persistStorage: StateStorage = ionicStorage;
@@ -25,7 +26,8 @@ const storageOptions = {
     name: 'products.store',
     storage: createJSONStorage(() => persistStorage),
     partialize: (state: ProductState & ProductActions) => ({
-        products: state.products
+        products: state.products,
+        metadata: state.metadata
     })
 }
 
@@ -33,17 +35,18 @@ export const useProductStore = create<ProductState & ProductActions>()(
     persist(
         immer((set, get) => ({
             ...initialState,
-            getRemoteProducts: () => {
-                getProducts().then((response: Response) => {
-                    if (response.data?.success) {
-                        set({
-                            products: response.data.data
-                        });
-                    }
-                })
-            },
             getLocalProducts: () => {
                 return get().products;
+            },
+            setMetadata: (metadata: any) => {
+                set({
+                    metadata
+                });
+            },
+            setProducts: (products: any[]) => {
+                set({
+                    products
+                })
             }
         })),
         storageOptions

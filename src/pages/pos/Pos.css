@@ -1,0 +1,11 @@
+.pos-wrapper {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-end;
+    height: 100%;
+    width: 100%;
+}
+
+ion-content {
+    --overflow: hidden;
+}

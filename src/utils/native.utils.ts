@@ -6,7 +6,6 @@ import { useDeviceStore } from '../store';
 import { ScreenOrientation } from '@capacitor/screen-orientation';
 
 export const getDeviceID = async () => {
-
     if (isPlatform('capacitor')) {
         const info = await Device.getInfo();
         return {
