@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Dude POS</string>
+    <string name="title_activity_main">Dude POS</string>
+    <string name="package_name">com.jvipoystarter.dudepos</string>
+    <string name="custom_url_scheme">com.jvipoystarter.dudepos</string>
+</resources>

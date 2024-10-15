@@ -1,4 +1,4 @@
-import { IonRow, IonCol, IonButton, IonIcon, IonBadge } from '@ionic/react';
+import { IonRow, IonCol, IonButton, IonIcon, IonBadge, IonItem, IonLabel, IonInput } from '@ionic/react';
 import { Order, Product } from '../../models';
 import { PopupModal } from '../popup-modal/PopupModal';
 import './ProductQuanitity.css'
@@ -24,15 +24,23 @@ export const ProductQuanitity: React.FC<ProductQuanitityProps> = ({
     order,
 }) => {
     const [quantity, setQuantity] = useState<number>(0);
+    const [price, setPrice] = useState<number>(0);
     const { addToCart, updateCart } = useCart();
     const { user } = useDevice();
 
     useEffect(() => {
         if (order) {
             setQuantity(order.quantity);
+            if(order.product.isDynamicPrice) {
+                setPrice(order.price!);
+            }
         }
-    }, [order])
+    }, [order]);
 
+    const updatePrice = (event:any) => {
+        console.log(event);
+        setPrice(event.target.value);
+    }
 
     const udpateQuantity = (value: number) => {
         if (value < 0) return;
@@ -46,13 +54,21 @@ export const ProductQuanitity: React.FC<ProductQuanitityProps> = ({
     }
 
     const addOrder = () => {
+        let orderQuantity: number = quantity;
+        if(product.isDynamicPrice) {
+            if(price == 0)
+            return;
+
+            orderQuantity = 1;
+        }
+
         const order: Order = {
             transaction_code: '',
             product: product,
             product_id: product?.id,
             branch_id: user.branch_id,
-            quantity: quantity,
-            price: product?.price,
+            quantity: orderQuantity,
+            price: product.isDynamicPrice ? price : product?.price,
             name: product?.name,
             status: 1,
             remarks: '',
@@ -69,13 +85,20 @@ export const ProductQuanitity: React.FC<ProductQuanitityProps> = ({
             orderQuantity = product.stock;
         }
 
+        if(product.isDynamicPrice) {
+            if(price == 0)
+            return;
+
+            orderQuantity = 1;
+        }
+
         const order: Order = {
             transaction_code: '',
             product: product,
             product_id: product?.id,
             branch_id: user.branch_id,
             quantity: orderQuantity,
-            price: product?.price,
+            price: product.isDynamicPrice ? price : product?.price,
             name: product?.name,
             status: 1,
             remarks: '',
@@ -87,6 +110,7 @@ export const ProductQuanitity: React.FC<ProductQuanitityProps> = ({
 
     const oncClose = () => {
         setQuantity(0);
+        setPrice(0);
         onModalClose();
     }
 
@@ -103,29 +127,48 @@ export const ProductQuanitity: React.FC<ProductQuanitityProps> = ({
                             <IonBadge color='primary'>{product.category.name}</IonBadge>
                             <IonBadge color='medium'>{product.sub_category.name}</IonBadge>
                         </div>
-                        <div className='product-stock'>Stock: <span>{product.stock}</span></div>
+                        {  
+                            !product.isDynamicPrice && product.hasStock &&
+                            <div className='product-stock'>Stock: <span>{product.stock}</span></div>
+                        }
                     </div>
                     <div className='quantity-form'>
-                        <IonRow class="container ion-justify-content-center">
-                            <IonCol class="ion-text-right" size="4">
-                                <IonButton fill="clear" onClick={() => udpateQuantity(quantity - 1)}>
-                                    <IonIcon size="large" icon={removeCircleOutline} />
-                                </IonButton>
-                            </IonCol>
-                            <IonCol size="4"><input className="input-num" value={quantity}
-                                onChange={(e: any) => setQuantity(e.target.value)}
-                                type="number" /></IonCol>
-                            <IonCol class="ion-text-left" size="4">
-                                <IonButton fill="clear" onClick={() => udpateQuantity(quantity + 1)}>
-                                    <IonIcon size="large" icon={addCircleOutline} />
-                                </IonButton>
-                            </IonCol>
-                        </IonRow>
+                        {
+                            product.isDynamicPrice &&
+                            <IonItem>
+                                <IonLabel position='stacked'>Price</IonLabel>
+                                <IonInput 
+                                    clearOnEdit
+                                    type='number'
+                                    step='0.25'
+                                    onIonChange={updatePrice}
+                                    value={price}
+                                />
+                            </IonItem>
+                        }
+                        {
+                            product.hasStock &&
+                            <IonRow class="container ion-justify-content-center">
+                                <IonCol class="ion-text-right" size="4">
+                                    <IonButton fill="clear" onClick={() => udpateQuantity(quantity - 1)}>
+                                        <IonIcon size="large" icon={removeCircleOutline} />
+                                    </IonButton>
+                                </IonCol>
+                                <IonCol size="4"><input className="input-num" value={quantity}
+                                    onChange={(e: any) => setQuantity(e.target.value)}
+                                    type="number" /></IonCol>
+                                <IonCol class="ion-text-left" size="4">
+                                    <IonButton fill="clear" onClick={() => udpateQuantity(quantity + 1)}>
+                                        <IonIcon size="large" icon={addCircleOutline} />
+                                    </IonButton>
+                                </IonCol>
+                            </IonRow>
+                        }
                         {
                             !isEdit ?
-                                <IonButton disabled={quantity === 0} size="large" expand="block" onClick={addOrder}>Add to
+                                <IonButton disabled={product.isDynamicPrice ? price <= 0 : quantity == 0} size="large" expand="block" onClick={addOrder}>Add to
                                     Order</IonButton> :
-                                <IonButton disabled={quantity === 0} size="large" expand="block" onClick={updateCartOrder}>Update
+                                <IonButton disabled={product.isDynamicPrice ? price <= 0 : quantity == 0} size="large" expand="block" onClick={updateCartOrder}>Update
                                     Order</IonButton>
                         }
                     </div>

@@ -1,9 +1,12 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.ninjaspajamas.pos',
+  appId: 'com.jvipoystarter.dudepos',
   appName: 'Dude POS',
-  webDir: 'dist'
+  webDir: 'dist',
+  server: {
+    androidScheme: 'https'
+  }
 };
 
 export default config;

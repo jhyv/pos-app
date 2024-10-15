@@ -112,11 +112,17 @@ export const ProductSelection: React.FC<ProductSelectionProps> = () => {
                                         <IonBadge color='primary'>{product.category.name}</IonBadge>
                                         <IonBadge color='medium'>{product.sub_category.name}</IonBadge>
                                     </div>
-                                    <div className='product-stock'>Stock: <span>{product.stock}</span></div>
+                                    {
+                                        !product.isDynamicPrice && product.hasStock &&
+                                        <div className='product-stock'>Stock: <span>{product.stock}</span></div>
+                                    }
                                 </div>
-                                <div className='product-price'>
-                                    P {product.price}
-                                </div>
+                                {
+                                    !product.isDynamicPrice && product.hasStock &&
+                                    <div className='product-price'>
+                                        P {product.price}
+                                    </div>
+                                }
                             </div>
                         ))
                     }

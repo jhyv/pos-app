@@ -1,0 +1,27 @@
+.setup-wrapper {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--ion-color-light);
+}
+
+.setup-loader {
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.setup-loader ion-spinner {
+    height: 50px;
+    width: 50px;
+}
+
+.setup-loader .setup-label {
+    margin-top: 10px;
+    font-size: 20px;
+    font-weight: bold;
+}

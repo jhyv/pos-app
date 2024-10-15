@@ -1,5 +1,5 @@
 import { Redirect, Route } from 'react-router-dom';
-import { IonApp, IonRouterOutlet, setupIonicReact, useIonLoading, useIonRouter } from '@ionic/react';
+import { IonApp, IonRouterOutlet, isPlatform, setupIonicReact, useIonAlert, useIonLoading, useIonRouter } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import Home from './pages/Home';
 
@@ -34,52 +34,17 @@ import '@ionic/react/css/display.css';
 import './theme/variables.css';
 import './theme/modal.css';
 import { useEffect } from 'react';
-import { getDeviceID, setOrientation } from './utils/native.utils';
+import { setOrientation } from './utils/native.utils';
 import { Pos } from './pages/pos/Pos';
 import { Setup } from './pages/setup/Setup';
-import { useDevice, useStore } from './hooks';
-import { checkDevice } from './services';
-import { AxiosResponse } from 'axios';
 setupIonicReact();
 
 const App: React.FC = () => {
-  const { saveToken, saveUser, setDevice } = useDevice();
-  const { fetchProducts, fetchMetadata, products } = useStore();
-  const [loader, dismiss] = useIonLoading();
-  const navigation = useIonRouter();
 
   useEffect(() => {
     setOrientation();
-    fetchMetadata();
-    initDevice();
   }, []);
 
-  const initDevice = async () => {
-    const device = await getDeviceID();
-    setDevice(device);
-    checkDeviceStatus(device);
-  }
-
-  const checkDeviceStatus = async (device: any) => {
-    loader({
-      message: 'Checking Device Information',
-      duration: 10000
-    });
-
-    const response: AxiosResponse = await checkDevice(device);
-    await dismiss();
-
-    if (response.data?.success && response.data.data) {
-      saveUser(response.data.data.user)
-      saveToken(response.data.data.token);
-      fetchProducts().then(() => {
-        navigation.push('/order');
-      });
-    } else {
-      navigation.push('/setup');
-
-    }
-  }
 
   return (
     <IonApp>

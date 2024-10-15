@@ -1,6 +1,6 @@
 ion-modal.alert-container {
     --width: fit-content;
-    --min-width: 250px;
+    --min-width: 450px;
     --height: fit-content;
     --border-radius: 6px;
     --box-shadow: 0 28px 48px rgba(0, 0, 0, 0.4);
@@ -8,6 +8,12 @@ ion-modal.alert-container {
 
 ion-modal.alert-container.small {
     --width: 300px;
-    --min-width: 250px;
+    --min-width: 350px;
     --height: 300px;
+}
+
+ion-modal.alert-container.medium {
+    --width: 600px;
+    --min-width: 350px;
+    --height: 80vh;
 }

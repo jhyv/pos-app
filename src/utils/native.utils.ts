@@ -9,7 +9,7 @@ export const getDeviceID = async () => {
     if (isPlatform('capacitor')) {
         const info = await Device.getInfo();
         return {
-            uuid: await Device.getId(),
+            uuid: (await Device.getId()).identifier,
             model: info.model,
             platform: info.platform
         };
@@ -20,18 +20,6 @@ export const getDeviceID = async () => {
         model: 'testdevicemodel',
         platform: 'web'
     };
-}
-
-export const checkNetworkConnection = async () => {
-    const setNetwork = useDeviceStore(state => state.setNetwork);
-
-    Network.removeAllListeners();
-    Network.addListener('networkStatusChange', (status) => {
-        Logger.log('[checkNetworkConnection] networkStatusChange', status);
-        setNetwork(status.connectionType);
-    });
-
-    setNetwork(await Network.getStatus());
 }
 
 export const setOrientation = () => {

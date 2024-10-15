@@ -7,6 +7,7 @@ import { Product } from "../../models/product.model";
 type ProductState = {
     products: Product[],
     metadata: any,
+    hasHydrated: boolean,
 };
 
 type ProductActions = {
@@ -17,7 +18,8 @@ type ProductActions = {
 
 const initialState: ProductState = {
     products: [],
-    metadata: null
+    metadata: null,
+    hasHydrated: false
 };
 
 const persistStorage: StateStorage = ionicStorage;
@@ -28,7 +30,10 @@ const storageOptions = {
     partialize: (state: ProductState & ProductActions) => ({
         products: state.products,
         metadata: state.metadata
-    })
+    }),
+    onRehydrateStorage: () => () => {
+        useProductStore.setState({ hasHydrated: true });
+    }
 }
 
 export const useProductStore = create<ProductState & ProductActions>()(

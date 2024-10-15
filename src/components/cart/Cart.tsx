@@ -1,9 +1,9 @@
-import { IonButton, IonIcon } from '@ionic/react';
+import { IonButton, IonIcon, useIonAlert } from '@ionic/react';
 import './Cart.css';
-import { useCart } from '../../hooks';
+import { useCart, useStore } from '../../hooks';
 import { Order } from '../../models';
 import { createOutline, trashOutline } from 'ionicons/icons';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ProductQuanitity } from '../product-quantity/ProductQuantity';
 
 interface CartProps {
@@ -11,8 +11,15 @@ interface CartProps {
 
 export const Cart: React.FC<CartProps> = () => {
     const { items, removeFromCart } = useCart();
+    const { saveTransaction, uploadTransactions, transactions } = useStore();
     const [order, setOrder] = useState<Order | undefined>(undefined);
     const [state, setState] = useState(false);
+    const [presentAlert] = useIonAlert();
+
+
+    useEffect(() => {
+        uploadTransactions();
+    }, [transactions]);
 
     const editOrder = (item: Order) => {
         setOrder(oldVal => {
@@ -26,7 +33,19 @@ export const Cart: React.FC<CartProps> = () => {
         const itemPrices = items.map((item: Order) => (item.price! * item.quantity));
 
         return (itemPrices.reduce((a: number, b: number) => a + b, 0)).toFixed(2);
-    }, [items])
+    }, [items]);
+
+    const onPlaceOrder = () => {
+        presentAlert(`Are you sure you want to place this order?`, [
+            { text: 'Cancel', role: 'cancel' },
+            {
+                text: 'Confirm', handler: () => {
+                    saveTransaction(items, totalPrice);
+                }
+            },
+
+        ]);
+    }
 
     return (
         <>
@@ -38,7 +57,7 @@ export const Cart: React.FC<CartProps> = () => {
                             <div key={`cart-item-${index}`} className='order-box'>
                                 <div className='order-item'>
                                     <div>
-                                        {item.product.name} (x{item.quantity})
+                                        {item.product.name} {  !item.product?.isDynamicPrice ? `(x${item.quantity})` : '' }
                                     </div>
                                     <div>
                                         P {item.price}
@@ -61,7 +80,7 @@ export const Cart: React.FC<CartProps> = () => {
                         <span>Total:</span>
                         <span>P {totalPrice}</span>
                     </div>
-                    <IonButton expand='block'>
+                    <IonButton expand='block' onClick={onPlaceOrder} disabled={items.length === 0}>
                         Place Order
                     </IonButton>
                 </div>

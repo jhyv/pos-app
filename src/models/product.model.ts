@@ -24,4 +24,5 @@ export interface Product
     barcode?: string;
     retail_price?: number;
     unit?: string;
+    isDynamicPrice?: boolean;
 }

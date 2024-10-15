@@ -10,6 +10,7 @@ type DeviceState = {
     uuid: string,
     user: any,
     device: any,
+    hasHydrated: boolean,
 };
 
 type DeviceActions = {
@@ -17,6 +18,7 @@ type DeviceActions = {
     saveToken: (token: string) => any,
     saveUser: (user: any) => any,
     setDevice: (device: any) => any,
+    checkUser: () => any,
 };
 
 const initialState: DeviceState = {
@@ -27,7 +29,8 @@ const initialState: DeviceState = {
     token: '',
     uuid: '',
     user: null,
-    device: null
+    device: null,
+    hasHydrated: false
 };
 
 const persistStorage: StateStorage = ionicStorage;
@@ -40,12 +43,15 @@ const storageOptions = {
         uuid: state.uuid,
         user: state.user,
         device: state.device
-    })
+    }),
+    onRehydrateStorage: () => () => {
+        useDeviceStore.setState({ hasHydrated: true });
+    }
 }
 
 export const useDeviceStore = create<DeviceState & DeviceActions>()(
     persist(
-        immer((set) => ({
+        immer((set, get) => ({
             ...initialState,
             setNetwork: (network: any) => {
                 set({
@@ -66,6 +72,9 @@ export const useDeviceStore = create<DeviceState & DeviceActions>()(
                 set({
                     device
                 })
+            },
+            checkUser: async () => {
+                return get().user;
             }
         })),
         storageOptions

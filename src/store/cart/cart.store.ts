@@ -3,6 +3,7 @@ import { create } from "zustand";
 import { immer } from "zustand/middleware/immer";
 import { ionicStorage } from "../../utils";
 import { Order } from "../../models";
+import moment from "moment";
 
 type CartState = {
     items: any,
@@ -34,14 +35,18 @@ export const useCartStore = create<CartState & CartActions>()(
         immer((set, get) => ({
             ...initialState,
             addToCart: (order: Order) => {
-                const index = get().items.findIndex((item: Order) => item.product_id === order.product_id);
+                let index = get().items.findIndex((item: Order) => item.product_id === order.product_id);
+
+                if(order.product.isDynamicPrice) {
+                    index = -1;
+                }
 
                 if (index > -1) {
                     set((state) => ({
                         items: state.items.map((item: Order) => {
                             if (item.product_id === order.product_id) {
                                 order.quantity += item.quantity;
-
+                                order.updatedAt = moment().format('YYYY-MM-DD HH:mm:ss');
                                 return order;
                             }
 
@@ -49,6 +54,7 @@ export const useCartStore = create<CartState & CartActions>()(
                         })
                     }));
                 } else {
+                    order.createdAt = moment().format('YYYY-MM-DD HH:mm:ss');
                     set((state) => ({
                         items: [...state.items, order]
                     }));
